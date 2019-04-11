@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script src="./underscore-min.js"></script>
+    <script src="./javascripts/jquery.min.js"></script>
+
+    <!-- <script src="./javascripts/data.js"></script> -->
+    <script src="./javascripts/lib.js"></script>
+
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      var map;
+
+
+      var promise = $.when($.getJSON( "graph.json"), $.getJSON( "nodes.json"));
+
+      function initMap() {
+
+        var map = new google.maps.Map(
+        document.getElementById('map'), {zoom: 14, center: { lat: 38.8898126, lng: -77.0059273 }});
+
+        // for(var n = 0; n < points.length; n++){
+        //   var marker = new google.maps.Marker({position: points[n], map: map});
+        // }
+
+        promise.then(function(graph, nodes){
+          plotGraph(graph[0], nodes[0], google, map);
+        });
+
+        // plotCC(cc, graph, nodes, google, map);
+        // for(var n = 0; n < ways.length; n++){
+        //   if(n%2 == 0){
+        //     var flightPath = new google.maps.Polyline({
+        //       path: ways[n],
+        //       geodesic: true,
+        //       strokeColor: '#FF0000',
+        //       strokeOpacity: 1.0,
+        //       strokeWeight: 2
+        //     });
+        //     flightPath.setMap(map);
+        //   }
+        //   else{
+        //     var flightPath = new google.maps.Polyline({
+        //       path: ways[n],
+        //       geodesic: true,
+        //       strokeColor: '#00FF00',
+        //       strokeOpacity: 1.0,
+        //       strokeWeight: 2
+        //     });
+        //     flightPath.setMap(map);
+        //   }
+        //
+        // }
+
+
+
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap"
+    async defer></script>
+  </body>
+</html>
