@@ -1,12 +1,20 @@
+// Consider:
+//https://github.com/isaacs/sax-js
+//https://www.npmjs.com/package/JSONStream
+
 var fs = require('fs');
 var xml2js = require('xml2js');
 var _ = require('underscore');
 
 const FILE_IN = '/data/map.osm';
-// const FILE_IN = '/data/Central-WashingtonDC-OpenStreetMap.xml';
+//const FILE_IN = '/data/Central-WashingtonDC-OpenStreetMap.xml';
+// const FILE_IN = '/data/XMLs/map.xml';
 
 fs.readFile(__dirname + FILE_IN, function(err, data) {
     xml2js.parseString(data, function (err, result) {
+        if(err){
+          return console.log(err);
+        }
         var nodes = _.map(result.osm.node, function(node){
           return {id: parseInt(node.$.id), lat: parseFloat(node.$.lat), lng: parseFloat(node.$.lon)};
         });
@@ -40,9 +48,33 @@ fs.readFile(__dirname + FILE_IN, function(err, data) {
         var graphClean = _.mapObject(graph, function(v){
           return Object.keys(v);
         });
-        fs.writeFile('./data/graph.json', JSON.stringify(graphClean, null, 4));
-        fs.writeFile('./data/nodes.json', JSON.stringify(nodeMap, null, 4));
+        console.log("nodes:" + Object.keys(graphClean).length);
+        console.log("edges: " + _.reduce(graphClean, function(memo, ob){
+          return memo + ob.length;
+        }, 0))
 
+
+        fs.writeFile('./data/graph.json', JSON.stringify(graphClean, null, 4), function(err){
+          if(err){
+            return console.log(err);
+          }
+        });
+        fs.writeFile('./data/nodes.json', JSON.stringify(nodeMap, null, 4), function(err){
+          if(err){
+            return console.log(err);
+          }
+        });
+
+        console.log('Write');
+
+        var graphFull = _.mapObject(nodeMap, function(v, k){
+          return {lat: v.lat , lon: v.lng, adj: graphClean[k]}
+        });
+        fs.writeFile('./data/graphFull.json', JSON.stringify(graphFull, null, 4), function(err){
+          if(err){
+            return console.log(err);
+          }
+        });
         // fs.writeFile('./data/cc.json', JSON.stringify(marked, null, 4));
 
         console.log('Done');
